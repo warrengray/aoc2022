@@ -42,3 +42,12 @@ func NewLineGroupedInts(r io.Reader) [][]int64 {
 
 	return allInts
 }
+
+func Lines(r io.Reader) []string {
+	var lines []string
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines
+}
