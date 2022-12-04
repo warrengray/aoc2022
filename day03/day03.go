@@ -4,40 +4,56 @@ import (
 	"io"
 	"unicode"
 
+	"golang.org/x/tools/container/intsets"
+
 	"aoc2022/aoc"
 )
 
 func Part1(r io.Reader) int {
 	sum := 0
 	for _, s := range aoc.Lines(r) {
-		d := findDuplicate([]rune(s))
-		if unicode.IsLower(d) {
-			sum += int(d - 96)
-			continue
-		}
-
-		sum += int(d - 38)
+		runes := []rune(s)
+		sum += priority(findCommon(runes[:len(runes)/2], runes[len(runes)/2:]))
 	}
+
 	return sum
 }
 
-func findDuplicate(s []rune) rune {
-	items := make(map[rune]bool)
-	var i int
-	for _, c := range s {
-		i++
-		if i <= len(s)/2 {
-			items[c] = true
-			continue
-		}
-
-		if items[c] {
-			return c
-		}
+func Part2(r io.Reader) int {
+	sum := 0
+	lines := aoc.Lines(r)
+	for i := 0; i < len(lines); i += 3 {
+		sum += priority(findCommon([]rune(lines[i]), []rune(lines[i+1]), []rune(lines[i+2])))
 	}
-	return 0
+
+	return sum
 }
 
-func Part2(r io.Reader) int {
-	return 0
+func priority(d rune) int {
+	if unicode.IsLower(d) {
+		return int(d - 96)
+	}
+
+	return int(d - 38)
+}
+
+func findCommon(sets ...[]rune) rune {
+	s := sparse(sets[0])
+	for i := 1; i < len(sets); i++ {
+		s.IntersectionWith(sparse(sets[i]))
+	}
+
+	if s.Len() > 1 {
+		panic("more than one common result")
+	}
+
+	return rune(s.Min())
+}
+
+func sparse(rs []rune) *intsets.Sparse {
+	var s intsets.Sparse
+	for _, r := range rs {
+		s.Insert(int(r))
+	}
+	return &s
 }

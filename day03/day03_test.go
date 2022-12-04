@@ -57,12 +57,12 @@ func TestPart2(t *testing.T) {
 		{
 			name: "example",
 			args: args{r: bytes.NewReader(example)},
-			want: 157,
+			want: 70,
 		},
 		{
 			name: "input",
 			args: args{r: bytes.NewReader(input)},
-			want: 157,
+			want: 2488,
 		},
 	}
 	for _, tt := range tests {
@@ -72,5 +72,19 @@ func TestPart2(t *testing.T) {
 				t.Errorf("Part2() got = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkPart1(b *testing.B) {
+	r := bytes.NewReader(input)
+	for i := 0; i < b.N; i++ {
+		day03.Part1(r)
+	}
+}
+
+func BenchmarkPart2(b *testing.B) {
+	r := bytes.NewReader(input)
+	for i := 0; i < b.N; i++ {
+		day03.Part2(r)
 	}
 }
