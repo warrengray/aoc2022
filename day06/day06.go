@@ -28,6 +28,9 @@ func processInput(r io.Reader, uniqueLength int) int {
 func containsDuplicates(rs []rune) bool {
 	m := make(map[rune]bool)
 	for _, c := range rs {
+		if m[c] {
+			return false
+		}
 		m[c] = true
 	}
 
