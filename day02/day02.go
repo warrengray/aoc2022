@@ -23,7 +23,7 @@ func init() {
 	}
 }
 
-func Part1(r io.Reader) (int, error) {
+func Part1(r io.Reader) int {
 	return tally(
 		r,
 		func(us, _ string) string {
@@ -32,25 +32,7 @@ func Part1(r io.Reader) (int, error) {
 	)
 }
 
-func tally(r io.Reader, decider func(us, them string) string) (int, error) {
-	var score int
-	for _, l := range aoc.Lines(r) {
-		round := strings.Fields(l)
-		them := moves[round[0]]
-		us := decider(round[1], them)
-		score += plays[us]
-		switch {
-		case us == them:
-			score += 3 // draw
-		case winsAgainst[us] == them:
-			score += 6 // win
-		}
-	}
-
-	return score, nil
-}
-
-func Part2(r io.Reader) (int, error) {
+func Part2(r io.Reader) int {
 	return tally(
 		r,
 		func(us, them string) string {
@@ -65,4 +47,22 @@ func Part2(r io.Reader) (int, error) {
 			return us
 		},
 	)
+}
+
+func tally(r io.Reader, decider func(us, them string) string) int {
+	var score int
+	for _, l := range aoc.Lines(r) {
+		round := strings.Fields(l)
+		them := moves[round[0]]
+		us := decider(round[1], them)
+		score += plays[us]
+		switch {
+		case us == them:
+			score += 3 // draw
+		case winsAgainst[us] == them:
+			score += 6 // win
+		}
+	}
+
+	return score
 }

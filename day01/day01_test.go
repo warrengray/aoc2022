@@ -74,3 +74,19 @@ func TestPart2(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkPart1(b *testing.B) {
+	r := bytes.NewReader(input)
+	for i := 0; i < b.N; i++ {
+		r.Reset(input)
+		day01.Part1(r)
+	}
+}
+
+func BenchmarkPart2(b *testing.B) {
+	r := bytes.NewReader(input)
+	for i := 0; i < b.N; i++ {
+		r.Reset(input)
+		day01.Part2(r)
+	}
+}
