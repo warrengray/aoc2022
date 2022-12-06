@@ -2,24 +2,9 @@ package aoc
 
 import (
 	"bufio"
-	"bytes"
-	"fmt"
 	"io"
 	"strconv"
 )
-
-type Solution func(io.Reader) (string, error)
-
-func Run(input []byte, s ...Solution) {
-	for i, s := range s {
-		answer, err := s(bytes.NewReader(input))
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println("Part " + strconv.Itoa(i+1) + ": " + answer)
-	}
-}
 
 func NewLineGroupedInts(r io.Reader) [][]int64 {
 	allInts := make([][]int64, 0, 0)
@@ -34,7 +19,7 @@ func NewLineGroupedInts(r io.Reader) [][]int64 {
 
 		i, err := strconv.ParseInt(l, 10, 64)
 		if err != nil {
-			panic("cannont convert " + l + "to int: " + err.Error())
+			panic("cannot convert " + l + "to int: " + err.Error())
 		}
 
 		allInts[len(allInts)-1] = append(allInts[len(allInts)-1], i)
@@ -50,4 +35,14 @@ func Lines(r io.Reader) []string {
 		lines = append(lines, scanner.Text())
 	}
 	return lines
+}
+
+// Atoi exists for brevity. It panics if the string isn't an int.
+func Atoi(s string) int {
+	i, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		panic(err)
+	}
+
+	return int(i)
 }

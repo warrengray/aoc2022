@@ -1,16 +1,20 @@
-package main
+package day01
 
 import (
 	"io"
 	"sort"
-	"strconv"
 
 	"aoc2022/aoc"
 )
 
-func Part1(r io.Reader) (string, error) {
+func Part1(r io.Reader) int {
 	sums := sortedCaloriesPerElf(r)
-	return strconv.Itoa(sums[len(sums)-1]), nil
+	return sums[len(sums)-1]
+}
+
+func Part2(r io.Reader) int {
+	sums := sortedCaloriesPerElf(r)
+	return sums[len(sums)-1] + sums[len(sums)-2] + sums[len(sums)-3]
 }
 
 func sortedCaloriesPerElf(r io.Reader) []int {
