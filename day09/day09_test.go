@@ -15,6 +15,9 @@ var input []byte
 //go:embed example.txt
 var example []byte
 
+//go:embed example_large.txt
+var exampleLarge []byte
+
 func TestPart1(t *testing.T) {
 	type args struct {
 		r io.Reader
@@ -61,7 +64,7 @@ func TestPart2(t *testing.T) {
 		},
 		{
 			name: "example_large",
-			args: args{r: bytes.NewReader(example)},
+			args: args{r: bytes.NewReader(exampleLarge)},
 			want: 36,
 		},
 		{
@@ -79,6 +82,8 @@ func TestPart2(t *testing.T) {
 		})
 	}
 }
+
+// between 2414 and 2456
 
 func BenchmarkPart1(b *testing.B) {
 	r := bytes.NewReader(input)
