@@ -57,12 +57,12 @@ func TestPart2(t *testing.T) {
 		{
 			name: "example",
 			args: args{r: bytes.NewReader(example)},
-			want: 21,
+			want: 8,
 		},
 		{
 			name: "input",
 			args: args{r: bytes.NewReader(input)},
-			want: 1787,
+			want: 440640,
 		},
 	}
 	for _, tt := range tests {
