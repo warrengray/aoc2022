@@ -3,6 +3,7 @@ package aoc
 import (
 	"bufio"
 	"io"
+	"math"
 	"strconv"
 )
 
@@ -45,4 +46,8 @@ func Atoi(s string) int {
 	}
 
 	return int(i)
+}
+
+func IntAbs(i int) int {
+	return int(math.Abs(float64(i)))
 }

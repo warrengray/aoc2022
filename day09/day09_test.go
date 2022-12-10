@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"io"
+	"reflect"
 	"testing"
 
 	"aoc2022/day09"
@@ -17,6 +18,256 @@ var example []byte
 
 //go:embed example_large.txt
 var exampleLarge []byte
+
+func TestFollow(t *testing.T) {
+	type args struct {
+		head day09.Knot
+		tail day09.Knot
+	}
+
+	//    -1
+	// -1  0 +1
+	//    +1
+	tests := []struct {
+		name string
+		args args
+		want args
+	}{
+		// simple
+		{
+			name: "tail-above",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: -2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: -1},
+			},
+		},
+		{
+			name: "tail-below",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 1},
+			},
+		},
+		{
+			name: "tail-left-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1},
+			},
+		},
+		{
+			name: "tail-right-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1},
+			},
+		},
+		// diagonal
+		{
+			name: "tail-up-left-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: -2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 0, Row: -1},
+			},
+		},
+		{
+			name: "tail-left-up-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -2, Row: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: 0},
+			},
+		},
+		{
+			name: "tail-left-down-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -2, Row: 1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: 0},
+			},
+		},
+		{
+			name: "tail-down-left-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: 2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 0, Row: 1},
+			},
+		},
+		{
+			name: "tail-down-right-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: 2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 0, Row: 1},
+			},
+		},
+		{
+			name: "tail-right-down-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 2, Row: 1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: 0},
+			},
+		},
+		{
+			name: "tail-right-up-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 2, Row: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: 0},
+			},
+		},
+		{
+			name: "tail-up-right-of",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: -2},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 0, Row: -1},
+			},
+		},
+		// adjacent
+		{
+			name: "tail-up-right-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: -1},
+			},
+		},
+		{
+			name: "tail-right-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1},
+			},
+		},
+		{
+			name: "tail-down-right-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: 1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: 1, Row: 1},
+			},
+		},
+		{
+			name: "tail-down-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 1},
+			},
+		},
+		{
+			name: "tail-down-left-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 1, Col: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: 1, Col: -1},
+			},
+		},
+		{
+			name: "tail-left-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1},
+			},
+		},
+		{
+			name: "tail-up-left-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Col: -1, Row: -1},
+			},
+		},
+		{
+			name: "tail-up-adjacent",
+			args: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: -1},
+			},
+			want: args{
+				head: day09.Knot{},
+				tail: day09.Knot{Row: -1},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tail := &tt.args.tail
+			tail.Follow(&tt.args.head)
+			if !reflect.DeepEqual(tt.args, tt.want) {
+				t.Errorf("got = %+v, want %+v", tt.args, tt.want)
+			}
+		})
+	}
+}
 
 func TestPart1(t *testing.T) {
 	type args struct {
@@ -70,9 +321,10 @@ func TestPart2(t *testing.T) {
 		{
 			name: "input",
 			args: args{r: bytes.NewReader(input)},
-			want: 1,
+			want: 2419,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := day09.Part2(tt.args.r)
@@ -82,8 +334,6 @@ func TestPart2(t *testing.T) {
 		})
 	}
 }
-
-// between 2414 and 2456
 
 func BenchmarkPart1(b *testing.B) {
 	r := bytes.NewReader(input)
